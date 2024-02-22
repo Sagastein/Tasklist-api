@@ -1,0 +1,10 @@
+import express from "express";
+const router = express.Router();
+import TaskController from "../controllers/task.controller";
+import { checkAuth } from "../middleware/CheckAuth";
+router.get("/", TaskController.getTasks);
+router.post("/", checkAuth, TaskController.createTask);
+router.get("/:id", TaskController.getTask);
+router.patch("/:id", checkAuth, TaskController.completeTask);
+router.put("/:id", checkAuth, TaskController.editTask);
+export { router as TaskRouter };
