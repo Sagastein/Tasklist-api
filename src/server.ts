@@ -1,6 +1,6 @@
 import express from "express";
 import swaggerUi from "swagger-ui-express";
-const app = express();
+export const app = express();
 import cookieParser from "cookie-parser";
 import connectDB from "./config/db";
 import { UserRouter } from "./routes/user.route";
