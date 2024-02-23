@@ -4,7 +4,8 @@
   "description": "restfull todo app with ts",
   "main": "server.ts",
   "scripts": {
-    "test": "mocha --recursive ./src/tests/*.test.js",
+    "test": "mocha ./src/tests/*.test.ts",
+    "build": "tsc && ts-node ./src/server.ts",
     "server": "nodemon src/server.ts"
   },
   "keywords": [
