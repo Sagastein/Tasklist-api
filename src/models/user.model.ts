@@ -1,14 +1,22 @@
 // user.model.ts
 import mongoose from "mongoose";
 import * as bcrypt from "bcrypt";
-interface IUser {
+import { Document } from "mongoose";
+enum TypeRole {
+  user = "user",
+  admin = "admin",
+}
+export interface IUser extends Document {
   id: number;
   username: string;
   email: string;
   password: string;
+  role: TypeRole;
   createdAt: Date;
   updatedAt: Date;
+  comparePassword(candidatePassword: string): Promise<boolean>;
 }
+
 const userSchema = new mongoose.Schema<IUser>(
   {
     username: {
@@ -26,6 +34,11 @@ const userSchema = new mongoose.Schema<IUser>(
       type: String,
       required: true,
       trim: true,
+    },
+    role: {
+      type: String,
+      enum: [TypeRole.user, TypeRole.admin],
+      default: TypeRole.user,
     },
   },
   {
