@@ -5,7 +5,8 @@
   "main": "server.ts",
   "scripts": {
     "test": "mocha ./src/tests/*.test.ts",
-    "build": "tsc && ts-node ./src/server.ts",
+    "build": "tsc",
+    "start": "node ./dist/server.js",
     "server": "nodemon src/server.ts"
   },
   "keywords": [
