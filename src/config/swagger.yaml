@@ -1,0 +1,283 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Task Management API
+servers:
+  - url: http://localhost:8080/api/v1
+paths:
+  /user:
+    post:
+      tags:
+        - Users
+      summary: Register a new user
+      requestBody:
+        $ref: "#/components/requestBodies/UserRegisterRequest"
+      responses:
+        200:
+          description: User registered successfully
+
+  /user/:
+    get:
+      tags:
+        - Users
+      summary: Get all users
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserResponse"
+
+  /user/{userId}:
+    get:
+      tags:
+        - Users
+      summary: Get a user
+      parameters:
+        - $ref: "#/components/parameters/userId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+
+    put:
+      tags:
+        - Users
+      summary: Update a user
+      parameters:
+        - $ref: "#/components/parameters/userId"
+      requestBody:
+        $ref: "#/components/requestBodies/UserRegisterRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+  /user/login:
+    post:
+      tags:
+        - Authorization
+      summary: Login
+      requestBody:
+        $ref: "#/components/requestBodies/LoginRequest"
+      responses:
+        "200":
+          description: OK
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+
+  /logout:
+    post:
+      tags:
+        - Authorization
+      summary: Logout
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: OK
+
+  /task:
+    get:
+      tags:
+        - Tasks
+      summary: Get all task
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CreateTaskResponse"
+
+    post:
+      tags:
+        - Tasks
+      summary: Create new task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTaskRequest"
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateTaskResponse"
+
+  /task/{taskId}:
+    parameters:
+      - $ref: "#/components/parameters/taskId"
+
+    get:
+      summary: Get single task
+      tags:
+        - Tasks
+      responses:
+        200:
+          description: OK
+
+    put:
+      summary: Update task
+      tags:
+        - Tasks
+
+    delete:
+      summary: Delete task
+      tags:
+        - Tasks
+    patch:
+      summary: Complete task
+      description: This endpoint allows a user to mark a task as completed.
+      tags:
+        - Tasks
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+                properties:
+                  message:
+                    type: string
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: Authorization
+
+  schemas:
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+    Priority:
+      type: string
+      properties:
+        priority:
+          type: string
+    UserRegisterRequest:
+      type: object
+      required:
+        - username
+        - email
+        - password
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+    UserResponse:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    CreateTaskRequest:
+      type: object
+      required:
+        - title
+        - description
+        - priority
+        - dueDate
+
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        priority:
+          $ref: "#/components/schemas/Priority"
+        dueDate:
+          type: string
+          format: date
+
+    CreateTaskResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+  parameters:
+    taskId:
+      name: taskId
+      in: path
+      required: true
+      schema:
+        type: string
+    id:
+      name: id
+      in: path
+      required: true
+    userId:
+      name: userId
+      in: path
+      required: true
+      description: The ID of the user
+      schema:
+        type: string
+
+  requestBodies:
+    UserRegisterRequest:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserRegisterRequest"
+
+    LoginRequest:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/LoginRequest"
+
+  responses:
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
